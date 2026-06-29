@@ -5,7 +5,6 @@ import com.openclassrooms.etudiant.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -38,9 +37,7 @@ public class UserService {
         Assert.notNull(password, "Password must not be null");
         Optional<User> user = userRepository.findByLogin(login);
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                    .username(login).build();
-            return jwtService.generateToken(userDetails);
+            return jwtService.generateToken(user.get());
         } else {
             throw new IllegalArgumentException("Invalid credentials");
         }
