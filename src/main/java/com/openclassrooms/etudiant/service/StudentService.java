@@ -35,6 +35,15 @@ public class StudentService {
         return studentRepository.findById(id);
     }
 
+    public boolean delete(Long id) {
+        log.info("Deleting student with id {}", id);
+        if (!studentRepository.existsById(id)) {
+            return false;
+        }
+        studentRepository.deleteById(id);
+        return true;
+    }
+
     public Optional<Student> update(Long id, Student updated) {
         Assert.notNull(updated, "Student must not be null");
         log.info("Updating student with id {}", id);
