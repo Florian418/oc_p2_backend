@@ -34,4 +34,16 @@ public class StudentService {
         log.info("Fetching student with id {}", id);
         return studentRepository.findById(id);
     }
+
+    public Optional<Student> update(Long id, Student updated) {
+        Assert.notNull(updated, "Student must not be null");
+        log.info("Updating student with id {}", id);
+        return studentRepository.findById(id).map(existing -> {
+            existing.setFirstName(updated.getFirstName());
+            existing.setLastName(updated.getLastName());
+            existing.setEmail(updated.getEmail());
+            existing.setStudentNumber(updated.getStudentNumber());
+            return studentRepository.save(existing);
+        });
+    }
 }

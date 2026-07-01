@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +46,15 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> findById(@PathVariable Long id) {
         return studentService.findById(id)
+                .map(studentMapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<StudentResponseDTO> update(@PathVariable Long id,
+                                                     @Valid @RequestBody StudentRequestDTO dto) {
+        return studentService.update(id, studentMapper.toEntity(dto))
                 .map(studentMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
