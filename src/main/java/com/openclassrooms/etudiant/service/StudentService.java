@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional
@@ -20,5 +23,15 @@ public class StudentService {
         Assert.notNull(student, "Student must not be null");
         log.info("Creating new student");
         return studentRepository.save(student);
+    }
+
+    public List<Student> findAll() {
+        log.info("Fetching all students");
+        return studentRepository.findAll();
+    }
+
+    public Optional<Student> findById(Long id) {
+        log.info("Fetching student with id {}", id);
+        return studentRepository.findById(id);
     }
 }
