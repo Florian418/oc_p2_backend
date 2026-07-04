@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller REST exposant les opérations CRUD sur les étudiants
+ * (/api/students), protégé par le filtre JWT. N'expose que des DTOs,
+ * jamais l'entité Student.
+ */
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
@@ -27,6 +32,9 @@ public class StudentController {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
 
+    /**
+     * POST /api/students : crée un étudiant et renvoie 201 avec la ressource créée.
+     */
     @PostMapping
     public ResponseEntity<StudentResponseDTO> create(@Valid @RequestBody StudentRequestDTO dto) {
         StudentResponseDTO response = studentMapper.toDto(
@@ -35,6 +43,9 @@ public class StudentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * GET /api/students : renvoie la liste de tous les étudiants.
+     */
     @GetMapping
     public ResponseEntity<List<StudentResponseDTO>> findAll() {
         List<StudentResponseDTO> students = studentService.findAll()
@@ -44,6 +55,9 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
+    /**
+     * GET /api/students/{id} : renvoie l'étudiant demandé, ou 404 s'il n'existe pas.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> findById(@PathVariable Long id) {
         return studentService.findById(id)
@@ -52,6 +66,9 @@ public class StudentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * PUT /api/students/{id} : met à jour l'étudiant demandé, ou renvoie 404 s'il n'existe pas.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> update(@PathVariable Long id,
                                                      @Valid @RequestBody StudentRequestDTO dto) {
@@ -61,6 +78,10 @@ public class StudentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * DELETE /api/students/{id} : supprime l'étudiant demandé (204),
+     * ou renvoie 404 s'il n'existe pas.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return studentService.delete(id)

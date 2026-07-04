@@ -16,6 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 
+/**
+ * Filtre exécuté une fois par requête : lit le token JWT présent dans le header
+ * "Authorization", le valide et, s'il est valide, authentifie l'utilisateur
+ * auprès de Spring Security pour la durée de la requête.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -23,12 +28,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailService customUserDetailService;
 
+    /**
+     * Exclut du filtrage JWT les routes publiques (login/register), qui n'ont
+     * pas encore de token à ce stade.
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.equals("/api/login") || path.equals("/api/register");
     }
 
+    /**
+     * Extrait et valide le token Bearer de la requête, puis peuple le
+     * SecurityContext si le token est valide. Renvoie 401 si le token est
+     * invalide ou expiré ; laisse passer la requête sans authentification si
+     * aucun token n'est fourni.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

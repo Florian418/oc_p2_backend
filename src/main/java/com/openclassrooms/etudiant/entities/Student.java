@@ -15,6 +15,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entité JPA représentant un étudiant, mappée sur la table "student".
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
