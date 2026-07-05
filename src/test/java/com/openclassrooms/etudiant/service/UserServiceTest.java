@@ -24,10 +24,13 @@ public class UserServiceTest {
     private static final String LAST_NAME = "Doe";
     private static final String LOGIN = "LOGIN";
     private static final String PASSWORD = "PASSWORD";
+    private static final String TOKEN = "TOKEN";
     @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtService jwtService;
     @InjectMocks
     private UserService userService;
 
@@ -74,5 +77,46 @@ public class UserServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue()).isEqualTo(user);
+    }
+
+    @Test
+    public void test_login_valid_credentials_returns_token() {
+        // GIVEN un login existant dont le mot de passe correspond
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, PASSWORD)).thenReturn(true);
+        when(jwtService.generateToken(user)).thenReturn(TOKEN);
+
+        // WHEN on se connecte avec les bons identifiants
+        String result = userService.login(LOGIN, PASSWORD);
+
+        // THEN le token généré par JwtService est renvoyé
+        assertThat(result).isEqualTo(TOKEN);
+    }
+
+    @Test
+    public void test_login_unknown_login_throws_IllegalArgumentException() {
+        // GIVEN un login qui n'existe pas en base
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.empty());
+
+        // THEN une IllegalArgumentException est levée
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
+    }
+
+    @Test
+    public void test_login_wrong_password_throws_IllegalArgumentException() {
+        // GIVEN un login existant mais un mot de passe qui ne correspond pas
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, PASSWORD)).thenReturn(false);
+
+        // THEN une IllegalArgumentException est levée
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
     }
 }
