@@ -1,6 +1,7 @@
+name: oc-p2-exo-1
 services:
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:8.4.10'
     environment:
       - 'MYSQL_DATABASE=${DB_NAME}'
       - 'MYSQL_USER=${DB_USER}'
