@@ -162,6 +162,13 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>com/openclassrooms/etudiant/dto/**</exclude>
+						<exclude>com/openclassrooms/etudiant/handler/**</exclude>
+						<exclude>com/openclassrooms/etudiant/entities/**</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
